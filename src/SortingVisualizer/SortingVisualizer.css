@@ -1,5 +1,7 @@
 #wrap {
+  width: 100vw;
   display: flex;
+  justify-content: space-between;
 }
 
 #buttons-container {
@@ -14,14 +16,15 @@ button {
 
 .array-container {
   height: 100vh;
-  width: 90vw;
+  width: 80vw;
   display: flex;
   justify-content: center;
   align-items: flex-end;
+  margin-right: 1vmin;
 }
 
 .array-bar {
-  width: 1vw;
+  width: 2vmin;
   background-color: lightgrey;
-  margin: 0 0.1vw;
+  margin: 0 0.2vmin;
 }
