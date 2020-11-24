@@ -43,6 +43,10 @@ button:disabled {
   opacity: 0.3;
 }
 
+button:focus {
+  outline: none;
+}
+
 .slider-title {
   color: turquoise;
   font-size: 1.8vmin;
