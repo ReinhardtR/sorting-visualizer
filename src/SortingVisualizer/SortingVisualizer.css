@@ -13,35 +13,57 @@
   margin-right: 10vmin;
 }
 
+.section-title {
+  font-size: 4vmin;
+  color: white;
+  margin: 4vmin 0 1vmin 0;
+}
+
 button {
   height: 4%;
   width: 65%;
-  margin: 0.5vmin;
+  margin-bottom: 1.2vmin;
+  border-radius: 16px;
+  background-color: rgb(25, 25, 25);
+  border: solid 0.3vmin turquoise;
+  color: turquoise;
+  font-size: 1.6vmin;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+button:hover:enabled {
+  cursor: pointer;
+  background-color: turquoise;
+  color: rgb(25, 25, 25);
 }
 
 button:disabled {
   cursor: no-drop;
+  opacity: 0.3;
 }
 
 .slider-title {
   color: turquoise;
-  font-size: 24;
+  font-size: 1.8vmin;
   font-weight: 600;
-  margin: 3vmin 0 1vmin 0;
+  margin-bottom: 0.6vmin;
 }
 
 .slider {
   width: 65%;
+  margin-bottom: 2vmin;
 }
 
 .slider:disabled {
+  opacity: 0.5;
   background-color: rgb(25, 25, 25);
   cursor: no-drop;
 }
 
 .array-container {
   height: 100vh;
-  width: 80vw;
+  width: 85vw;
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;

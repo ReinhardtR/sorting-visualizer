@@ -10,10 +10,10 @@ import { getMergeSortAnimations } from "./Algorithms/mergeSort.js";
 const PRIMARY_COLOR = "turquoise";
 
 // This is the color of array bars that are being compared throughout the animations.
-const SECONDARY_COLOR = "red";
+const SECONDARY_COLOR = "yellow";
 
 // This is the color of the array bar shortly after its height has been changed.
-const TERTIARY_COLOR = "yellow";
+const TERTIARY_COLOR = "red";
 
 export class SortingVisualizer extends React.Component {
   constructor(props) {
@@ -102,11 +102,12 @@ export class SortingVisualizer extends React.Component {
       <>
         <div id="wrap">
           <div id="ui">
+            <div className="section-title">Actions</div>
             <button
               onClick={() => this.generateRandomArray()}
               disabled={this.state.animationIsRunning}
             >
-              Generate New Array
+              New Array
             </button>
             <button
               onClick={() => {
@@ -118,6 +119,7 @@ export class SortingVisualizer extends React.Component {
             >
               Merge Sort
             </button>
+            <div className="section-title">Settings</div>
             <div className="slider-title">Number of Bars</div>
             <Slider
               className="slider"
