@@ -62,7 +62,7 @@ export class SortingVisualizer extends React.Component {
         setTimeout(() => {
           const [barOneIdx, newHeight] = animations[i];
           const barOneStyle = arrayBars[barOneIdx].style;
-          barOneStyle.height = `${newHeight}px`;
+          barOneStyle.height = `${newHeight / 10}vh`;
         }, i * ANIMATION_SPEED_MS);
       }
     }
