@@ -1,14 +1,10 @@
 import React from "react";
+import Slider, { SliderTooltip, Handle } from "rc-slider";
+import "rc-slider/assets/index.css";
 import "./SortingVisualizer.css";
 
 // Sorting Algorithms
-import { getMergeSortAnimations } from "../SortingAlgorithms/mergeSort.js";
-
-// Change this value for the speed of the animations.
-const ANIMATION_SPEED_MS = 50;
-
-// Change this value for the number of bars (value) in the array.
-const NUMBER_OF_ARRAY_BARS = 50;
+import { getMergeSortAnimations } from "./Algorithms/mergeSort.js";
 
 // This is the main color of the array bars.
 const PRIMARY_COLOR = "turquoise";
@@ -17,7 +13,7 @@ const PRIMARY_COLOR = "turquoise";
 const SECONDARY_COLOR = "red";
 
 // This is the color of the array bar shortly after its height has been changed.
-const TERTIARY_COLOR = "purple";
+const TERTIARY_COLOR = "yellow";
 
 export class SortingVisualizer extends React.Component {
   constructor(props) {
@@ -25,6 +21,9 @@ export class SortingVisualizer extends React.Component {
 
     this.state = {
       array: [],
+      numberOfArrayBars: 50,
+      animationSpeed: 50,
+      animationIsRunning: false,
     };
   }
 
@@ -33,30 +32,33 @@ export class SortingVisualizer extends React.Component {
   }
 
   generateRandomArray() {
-    // Reset the color of array bars, if there is any.
-    const arrayBars = document.getElementsByClassName("array-bar");
-    if (arrayBars !== 0) {
-      for (let arrayBar of arrayBars) {
-        arrayBar.style.backgroundColor = "lightgrey";
-      }
-    }
-
     // Generate the random array and set state.
     const array = [];
-    for (let i = 0; i < NUMBER_OF_ARRAY_BARS; i++) {
+    for (let i = 0; i < this.state.numberOfArrayBars - 1; i++) {
       array.push(randomIntFromInterval(10, 1000));
     }
     this.setState({ array });
   }
 
   mergeSort() {
+    console.log(this.state.array);
     // Run merge sort algorithm.
     // To get list of animations in order.
     const animations = getMergeSortAnimations(this.state.array);
-    for (let i = 0; i < animations.length; i++) {
+    for (let i = 0; i <= animations.length; i++) {
       const arrayBars = document.getElementsByClassName("array-bar");
       const isColorChange = i % 3 !== 2; // Every third element of the array.
-      if (isColorChange) {
+      if (i === animations.length) {
+        console.log("in");
+        setTimeout(() => {
+          setTimeout(() => {
+            for (let arrayBar of arrayBars) {
+              arrayBar.style.backgroundColor = "white";
+            }
+          }, this.state.animationSpeed);
+          this.setState({ animationIsRunning: false });
+        }, i * this.state.animationSpeed);
+      } else if (isColorChange) {
         // Change the color of the two array bars being compared.
         const [barOneIdx, barTwoIdx] = animations[i];
         const barOneStyle = arrayBars[barOneIdx].style;
@@ -65,7 +67,7 @@ export class SortingVisualizer extends React.Component {
         setTimeout(() => {
           barOneStyle.backgroundColor = color;
           barTwoStyle.backgroundColor = color;
-        }, i * ANIMATION_SPEED_MS);
+        }, i * this.state.animationSpeed);
       } else {
         setTimeout(() => {
           // Set the height of an array bar.
@@ -76,8 +78,8 @@ export class SortingVisualizer extends React.Component {
           barOne.style.backgroundColor = TERTIARY_COLOR;
           setTimeout(() => {
             barOne.style.backgroundColor = PRIMARY_COLOR;
-          }, ANIMATION_SPEED_MS);
-        }, i * ANIMATION_SPEED_MS);
+          }, this.state.animationSpeed);
+        }, i * this.state.animationSpeed);
       }
     }
   }
@@ -96,19 +98,56 @@ export class SortingVisualizer extends React.Component {
   // }
 
   render() {
-    const { array } = this.state;
-
     return (
       <>
         <div id="wrap">
-          <div id="buttons-container">
-            <button onClick={() => this.generateRandomArray()}>
+          <div id="ui">
+            <button
+              onClick={() => this.generateRandomArray()}
+              disabled={this.state.animationIsRunning}
+            >
               Generate New Array
             </button>
-            <button onClick={() => this.mergeSort()}>Merge Sort</button>
+            <button
+              onClick={() => {
+                this.setState({ animationIsRunning: true }, () =>
+                  this.mergeSort()
+                );
+              }}
+              disabled={this.state.animationIsRunning}
+            >
+              Merge Sort
+            </button>
+            <div className="slider-title">Number of Bars</div>
+            <Slider
+              className="slider"
+              trackStyle={{ backgroundColor: PRIMARY_COLOR }}
+              handle={amountHandle}
+              defaultValue={this.state.numberOfArrayBars}
+              min={1}
+              max={100}
+              onChange={(value) => {
+                this.setState({ numberOfArrayBars: value });
+                this.generateRandomArray();
+              }}
+              disabled={this.state.animationIsRunning}
+            />
+            <div className="slider-title">Animation Delay</div>
+            <Slider
+              className="slider"
+              trackStyle={{ backgroundColor: PRIMARY_COLOR }}
+              handle={timeHandle}
+              defaultValue={this.state.numberOfArrayBars}
+              min={1}
+              max={100}
+              onChange={(value) => {
+                this.setState({ animationSpeed: value });
+              }}
+              disabled={this.state.animationIsRunning}
+            />
           </div>
           <div className="array-container">
-            {array.map((value, idx) => (
+            {this.state.array.map((value, idx) => (
               <div
                 className="array-bar"
                 key={idx}
@@ -133,3 +172,33 @@ function randomIntFromInterval(min, max) {
 //   }
 //   return true;
 // }
+
+const amountHandle = (props) => {
+  const { value, dragging, index, ...restProps } = props;
+  return (
+    <SliderTooltip
+      prefixCls="rc-slider-tooltip"
+      overlay={`${value}`}
+      visible={dragging}
+      placement="bottom"
+      key={index}
+    >
+      <Handle value={value} {...restProps} />
+    </SliderTooltip>
+  );
+};
+
+const timeHandle = (props) => {
+  const { value, dragging, index, ...restProps } = props;
+  return (
+    <SliderTooltip
+      prefixCls="rc-slider-tooltip"
+      overlay={`${value} ms`}
+      visible={dragging}
+      placement="bottom"
+      key={index}
+    >
+      <Handle value={value} {...restProps} />
+    </SliderTooltip>
+  );
+};

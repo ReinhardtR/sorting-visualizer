@@ -1,6 +1,7 @@
 body {
-  background-color: rgb(25, 25, 25);
   margin: 0;
+  background-color: rgb(10, 10, 10);
+  font-family: "Inter", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   display: flex;
