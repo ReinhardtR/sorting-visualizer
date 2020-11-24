@@ -5,16 +5,19 @@ import "./SortingVisualizer.css";
 import { getMergeSortAnimations } from "../SortingAlgorithms/mergeSort.js";
 
 // Change this value for the speed of the animations.
-const ANIMATION_SPEED_MS = 10;
+const ANIMATION_SPEED_MS = 50;
 
 // Change this value for the number of bars (value) in the array.
-const NUMBER_OF_ARRAY_BARS = 100;
+const NUMBER_OF_ARRAY_BARS = 50;
 
 // This is the main color of the array bars.
 const PRIMARY_COLOR = "turquoise";
 
 // This is the color of array bars that are being compared throughout the animations.
 const SECONDARY_COLOR = "red";
+
+// This is the color of the array bar shortly after its height has been changed.
+const TERTIARY_COLOR = "purple";
 
 export class SortingVisualizer extends React.Component {
   constructor(props) {
@@ -30,13 +33,15 @@ export class SortingVisualizer extends React.Component {
   }
 
   generateRandomArray() {
-    if (document.getElementsByClassName("array-bar") !== 0) {
-      const arrayBars = document.getElementsByClassName("array-bar");
+    // Reset the color of array bars, if there is any.
+    const arrayBars = document.getElementsByClassName("array-bar");
+    if (arrayBars !== 0) {
       for (let arrayBar of arrayBars) {
         arrayBar.style.backgroundColor = "lightgrey";
       }
     }
 
+    // Generate the random array and set state.
     const array = [];
     for (let i = 0; i < NUMBER_OF_ARRAY_BARS; i++) {
       array.push(randomIntFromInterval(10, 1000));
@@ -45,11 +50,14 @@ export class SortingVisualizer extends React.Component {
   }
 
   mergeSort() {
+    // Run merge sort algorithm.
+    // To get list of animations in order.
     const animations = getMergeSortAnimations(this.state.array);
     for (let i = 0; i < animations.length; i++) {
       const arrayBars = document.getElementsByClassName("array-bar");
-      const isColorChange = i % 3 !== 2;
+      const isColorChange = i % 3 !== 2; // Every third element of the array.
       if (isColorChange) {
+        // Change the color of the two array bars being compared.
         const [barOneIdx, barTwoIdx] = animations[i];
         const barOneStyle = arrayBars[barOneIdx].style;
         const barTwoStyle = arrayBars[barTwoIdx].style;
@@ -60,9 +68,15 @@ export class SortingVisualizer extends React.Component {
         }, i * ANIMATION_SPEED_MS);
       } else {
         setTimeout(() => {
+          // Set the height of an array bar.
+          // Temporarily change the color of that array bar.
           const [barOneIdx, newHeight] = animations[i];
-          const barOneStyle = arrayBars[barOneIdx].style;
-          barOneStyle.height = `${newHeight / 10}vh`;
+          const barOne = arrayBars[barOneIdx];
+          barOne.style.height = `${newHeight / 10}vh`;
+          barOne.style.backgroundColor = TERTIARY_COLOR;
+          setTimeout(() => {
+            barOne.style.backgroundColor = PRIMARY_COLOR;
+          }, ANIMATION_SPEED_MS);
         }, i * ANIMATION_SPEED_MS);
       }
     }
