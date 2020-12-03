@@ -1,5 +1,6 @@
 import React from "react";
 import Slider, { SliderTooltip, Handle } from "rc-slider";
+import Switch from "react-switch";
 import "rc-slider/assets/index.css";
 import "./SortingVisualizer.css";
 
@@ -24,6 +25,7 @@ export class SortingVisualizer extends React.Component {
       numberOfArrayBars: 50,
       animationSpeed: 50,
       animationIsRunning: false,
+      autoRun: false,
     };
   }
 
@@ -57,6 +59,10 @@ export class SortingVisualizer extends React.Component {
             }
           }, this.state.animationSpeed);
           this.setState({ animationIsRunning: false });
+          if (this.state.autoRun) {
+            this.generateRandomArray();
+            this.mergeSort();
+          }
         }, i * this.state.animationSpeed);
       } else if (isColorChange) {
         // Change the color of the two array bars being compared.
@@ -147,6 +153,23 @@ export class SortingVisualizer extends React.Component {
               }}
               disabled={this.state.animationIsRunning}
             />
+            <div className="slider-title"> Auto Run </div>
+            <label>
+              <Switch
+                checked={this.state.autoRun}
+                onChange={() => this.setState({ autoRun: !this.state.autoRun })}
+                onColor="#40e0d0"
+                onHandleColor="#fffff"
+                handleDiameter={21}
+                uncheckedIcon={false}
+                checkedIcon={false}
+                boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                height={20}
+                width={48}
+                className="switch"
+              />
+            </label>
           </div>
           <div className="array-container">
             {this.state.array.map((value, idx) => (

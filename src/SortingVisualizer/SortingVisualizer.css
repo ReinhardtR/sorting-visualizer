@@ -20,8 +20,8 @@
 }
 
 button {
-  height: 4%;
-  width: 65%;
+  height: 5vmin;
+  width: 16vmin;
   margin-bottom: 1.2vmin;
   border-radius: 16px;
   background-color: rgb(25, 25, 25);
@@ -34,7 +34,7 @@ button {
 
 button:hover:enabled {
   cursor: pointer;
-  background-color: turquoise;
+  background-color: #40e0d0;
   color: rgb(25, 25, 25);
 }
 
@@ -55,7 +55,7 @@ button:focus {
 }
 
 .slider {
-  width: 65%;
+  width: 16vmin;
   margin-bottom: 2vmin;
 }
 
