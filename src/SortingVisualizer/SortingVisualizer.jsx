@@ -1,6 +1,7 @@
 import React from "react";
 import Slider, { SliderTooltip, Handle } from "rc-slider";
 import Switch from "react-switch";
+import { timeoutCollection } from "time-events-manager";
 import "rc-slider/assets/index.css";
 import "./SortingVisualizer.css";
 
@@ -26,6 +27,7 @@ export class SortingVisualizer extends React.Component {
       animationSpeed: 50,
       animationIsRunning: false,
       autoRun: false,
+      closedUI: false,
     };
   }
 
@@ -34,6 +36,10 @@ export class SortingVisualizer extends React.Component {
   }
 
   generateRandomArray() {
+    setTimeout(() => {
+      resetArrayBarsColor();
+    }, this.state.animationSpeed);
+
     // Generate the random array and set state.
     const array = [];
     for (let i = 0; i < this.state.numberOfArrayBars - 1; i++) {
@@ -43,7 +49,6 @@ export class SortingVisualizer extends React.Component {
   }
 
   mergeSort() {
-    console.log(this.state.array);
     // Run merge sort algorithm.
     // To get list of animations in order.
     const animations = getMergeSortAnimations(this.state.array);
@@ -51,17 +56,15 @@ export class SortingVisualizer extends React.Component {
       const arrayBars = document.getElementsByClassName("array-bar");
       const isColorChange = i % 3 !== 2; // Every third element of the array.
       if (i === animations.length) {
-        console.log("in");
         setTimeout(() => {
           setTimeout(() => {
-            for (let arrayBar of arrayBars) {
-              arrayBar.style.backgroundColor = "white";
-            }
+            resetArrayBarsColor();
           }, this.state.animationSpeed);
-          this.setState({ animationIsRunning: false });
           if (this.state.autoRun) {
             this.generateRandomArray();
             this.mergeSort();
+          } else {
+            this.setState({ animationIsRunning: false });
           }
         }, i * this.state.animationSpeed);
       } else if (isColorChange) {
@@ -104,18 +107,21 @@ export class SortingVisualizer extends React.Component {
   // }
 
   render() {
-    return (
-      <>
-        <div id="wrap">
-          <div id="ui">
+    var UI;
+    if (!this.state.closedUI) {
+      UI = (
+        <div id="ui" className="open-ui">
+          <div id="upper-ui-wrap">
             <div className="section-title">Actions</div>
             <button
+              className="ui-button"
               onClick={() => this.generateRandomArray()}
               disabled={this.state.animationIsRunning}
             >
               New Array
             </button>
             <button
+              className="ui-button"
               onClick={() => {
                 this.setState({ animationIsRunning: true }, () =>
                   this.mergeSort()
@@ -157,9 +163,17 @@ export class SortingVisualizer extends React.Component {
             <label>
               <Switch
                 checked={this.state.autoRun}
-                onChange={() => this.setState({ autoRun: !this.state.autoRun })}
+                onChange={() =>
+                  this.setState(
+                    { autoRun: !this.state.autoRun, animationIsRunning: false },
+                    () => {
+                      timeoutCollection.removeAll();
+                      this.generateRandomArray();
+                    }
+                  )
+                }
                 onColor="#40e0d0"
-                onHandleColor="#fffff"
+                onHandleColor="#fff"
                 handleDiameter={21}
                 uncheckedIcon={false}
                 checkedIcon={false}
@@ -171,6 +185,50 @@ export class SortingVisualizer extends React.Component {
               />
             </label>
           </div>
+          <div id="bottom-ui-wrap">
+            <div className="text-wrap">
+              <div style={{ display: "flex" }}>
+                <div>Press</div>
+                <div className="colored-text">&nbsp;Space&nbsp;</div>
+              </div>
+              <div>to merge sort.</div>
+            </div>
+            <div className="text-wrap">
+              <div style={{ display: "flex" }}>
+                <div>Press</div>
+                <div className="colored-text">&nbsp;Enter&nbsp;</div>
+              </div>
+              <div>to minimze the menu.</div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <div
+          id="wrap"
+          tabIndex={-1}
+          onKeyPress={(key) => {
+            console.log(this.state.animationIsRunning);
+            console.log(key.code);
+            if (this.state.animationIsRunning) {
+              setTimeout(() => {
+                alert(
+                  "The array is being sorted.\nWait for it to finish or refresh the website."
+                );
+              }, 1);
+            } else if (key.code === "Enter") {
+              this.setState({ closedUI: !this.state.closedUI });
+            } else if (key.code === "Space") {
+              this.setState({ animationIsRunning: true }, () =>
+                this.mergeSort()
+              );
+            }
+          }}
+        >
+          {UI}
           <div className="array-container">
             {this.state.array.map((value, idx) => (
               <div
@@ -197,6 +255,15 @@ function randomIntFromInterval(min, max) {
 //   }
 //   return true;
 // }
+
+const resetArrayBarsColor = () => {
+  const arrayBars = document.getElementsByClassName("array-bar");
+  if (arrayBars) {
+    for (let arrayBar of arrayBars) {
+      arrayBar.style.backgroundColor = "white";
+    }
+  }
+};
 
 const amountHandle = (props) => {
   const { value, dragging, index, ...restProps } = props;
