@@ -49,25 +49,13 @@ export class SortingVisualizer extends React.Component {
   }
 
   mergeSort() {
-    // Run merge sort algorithm.
-    // To get list of animations in order.
+    // Run merge sort algorithm to get list of animations in order.
     const animations = getMergeSortAnimations(this.state.array);
-    for (let i = 0; i <= animations.length; i++) {
+    for (let i = 0; i < animations.length; i++) {
+      if (!this.state.animationIsRunning) return;
       const arrayBars = document.getElementsByClassName("array-bar");
       const isColorChange = i % 3 !== 2; // Every third element of the array.
-      if (i === animations.length) {
-        setTimeout(() => {
-          setTimeout(() => {
-            resetArrayBarsColor();
-          }, this.state.animationSpeed);
-          if (this.state.autoRun) {
-            this.generateRandomArray();
-            this.mergeSort();
-          } else {
-            this.setState({ animationIsRunning: false });
-          }
-        }, i * this.state.animationSpeed);
-      } else if (isColorChange) {
+      if (isColorChange) {
         // Change the color of the two array bars being compared.
         const [barOneIdx, barTwoIdx] = animations[i];
         const barOneStyle = arrayBars[barOneIdx].style;
@@ -91,6 +79,18 @@ export class SortingVisualizer extends React.Component {
         }, i * this.state.animationSpeed);
       }
     }
+    // After animations are done.
+    setTimeout(() => {
+      resetArrayBarsColor();
+      setTimeout(() => {
+        if (this.state.autoRun) {
+          this.generateRandomArray();
+          this.mergeSort();
+        } else {
+          this.setState({ animationIsRunning: false });
+        }
+      }, this.state.animationSpeed);
+    }, animations.length * this.state.animationSpeed);
   }
 
   // testSortingAlgorithms() {
@@ -211,14 +211,10 @@ export class SortingVisualizer extends React.Component {
           id="wrap"
           tabIndex={-1}
           onKeyPress={(key) => {
-            console.log(this.state.animationIsRunning);
-            console.log(key.code);
             if (this.state.animationIsRunning) {
-              setTimeout(() => {
-                alert(
-                  "The array is being sorted.\nWait for it to finish or refresh the website."
-                );
-              }, 1);
+              alert(
+                "The array is being sorted.\nWait for it to finish or refresh the website."
+              );
             } else if (key.code === "Enter") {
               this.setState({ closedUI: !this.state.closedUI });
             } else if (key.code === "Space") {
